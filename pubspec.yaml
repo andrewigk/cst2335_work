@@ -68,6 +68,9 @@ flutter:
     - images/salad.jpg
     - images/seafood.jpg
     - images/side.jpg
+    - images/lightbulb.png
+    - images/question.png
+    - images/stop.png
 
 
   #   - images/a_dot_ham.jpeg
