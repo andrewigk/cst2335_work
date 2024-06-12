@@ -1,5 +1,8 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'dataRepository.dart';
+import 'profilePage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +16,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      routes: { '/profilePage': (context) => ProfilePage(),
+        '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
+      },
+      initialRoute: '/',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -131,6 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 if (pword  == "QWERTY123"){
                   imageSource = "images/lightbulb.png";
+                  Navigator.pushNamed(context, '/profilePage');
                 }
                 else {
                   imageSource = "images/stop.png";
