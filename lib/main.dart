@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       routes: { '/profilePage': (context) => ProfilePage(),
-        '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
+        '/': (context) => MyHomePage(title: 'My To-Do List'),
       },
       initialRoute: '/',
       theme: ThemeData(
@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child:
                           Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Text("Task Number: $rowNum"),
+                                Text("Task Number: ${rowNum + 1} "),
                                 GestureDetector(
                                     child:  Text(words[rowNum]),
                                     onLongPress: () {
