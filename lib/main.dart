@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child:
-        Column( mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        Column(
             children:[
         Padding(padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
         child: Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
@@ -92,35 +92,69 @@ class _MyHomePageState extends State<MyHomePage> {
         ]),
       ),
 
+        Builder(
+        builder: (BuildContext context){
+      if(words.isEmpty){
+        return  Padding(padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("To-Do List is currently empty.")
+            ]));
+      }
+      else{
+        return
         Expanded(child: Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
             child:
-        ListView.builder(
-            itemCount: words.length,
-            itemBuilder: (context, rowNum) {
-              return Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
-              child: Container(
-                      padding: const EdgeInsets.all(10.0),
-                      color: Colors.deepPurple[100],
-                      child:
-                  Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text("Task Number: $rowNum"),
-                    GestureDetector(
-                        child:  Text(words[rowNum]),
-                        onLongPress: () {
-                          final snackBar = SnackBar(content: Text("You tapped me ohohoho"));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
-                    ),
+            ListView.builder(
+                itemCount: words.length,
+                itemBuilder: (context, rowNum) {
+                  return Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                      child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          color: Colors.deepPurple[100],
+                          child:
+                          Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text("Task Number: $rowNum"),
+                                GestureDetector(
+                                    child:  Text(words[rowNum]),
+                                    onLongPress: () {
+                                      showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) => AlertDialog(
+                                              title: const Text('Delete?'),
+                                              content: const Text('Are you sure you want to delete this item?'),
+                                              actions: <Widget>[
+                                                Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                    children: <Widget>[
+                                                      OutlinedButton(onPressed: () {
+                                                        setState(() {
+                                                          words.removeAt(rowNum);
+                                                          Navigator.pop(context);
+                                                        });
 
-                  ])));
-            }
+                                                      },
+                                                          child: Text("Yes")),
+                                                      OutlinedButton(onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                          child: Text("No"))
+
+                                                    ]
+                                                )
+
+                                              ]));
+                                    }
+                                ),
+
+                              ])));
+                }
             ))
-        )]
-
-
-
-        ),
-    ));
+        );
+      }
+      }),
+    ])));
   }
 }
