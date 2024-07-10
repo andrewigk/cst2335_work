@@ -8,6 +8,10 @@ class ToDoItem{
   final int id;
   final String itemName;
 
-  ToDoItem(this.id, this.itemName);   // shortcut where you can pass parameter and set this reference in one step
+  ToDoItem(this.id, this.itemName){ // shortcut where you can pass parameter and set this reference in one step
+    if(id >= ID) {
+      ID = id + 1;
+    }
+  }
 
 }

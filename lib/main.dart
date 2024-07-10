@@ -1,3 +1,6 @@
+import 'package:cst2335_summer24/todoDB.dart';
+import 'package:cst2335_summer24/todoItem.dart';
+import 'package:cst2335_summer24/todoItemDAO.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'dataRepository.dart';
@@ -41,14 +44,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  late ToDoDAO todoDao;
+  late TextEditingController _controller;
+  late TextEditingController _controller2;
+  List<ToDoItem> words =  [] ;
+
   @override
   void initState()  {
     super.initState();
     _controller = TextEditingController();
     _controller2 = TextEditingController();
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database){
+      todoDao = database.dao;   // should initialize DAO object
+      todoDao.selectAllToDo().then(  (listOfAllItems) {
+        setState(() {
+          words.addAll(listOfAllItems);
+        });
 
+      });
+    });
   }
-
 
 
 
@@ -59,9 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  late TextEditingController _controller;
-  late TextEditingController _controller2;
-  List<String> words =  [] ;
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ElevatedButton( child:Text("Add item"), onPressed:() {
             setState(() {
-              words.add( _controller.value.text );
+              var text = _controller.value.text;
+              var newItem = ToDoItem(ToDoItem.ID++, text);
+              todoDao.insertToDo(newItem);
+              words.add(newItem);
               _controller.text = "";
             });
           }),
@@ -118,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 Text("Task Number: ${rowNum + 1} "),
                                 GestureDetector(
-                                    child:  Text(words[rowNum]),
+                                    child:  Text(words[rowNum].itemName),
                                     onLongPress: () {
                                       showDialog<String>(
                                           context: context,
@@ -131,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     children: <Widget>[
                                                       OutlinedButton(onPressed: () {
                                                         setState(() {
+                                                          todoDao.deleteToDo(words[rowNum]);
                                                           words.removeAt(rowNum);
                                                           Navigator.pop(context);
                                                         });
