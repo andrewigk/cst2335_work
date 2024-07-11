@@ -49,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _controller2;
   List<ToDoItem> words =  [] ;
   ToDoItem? selectedItem;
+  int selectedRow = 0;
 
 
   @override
@@ -83,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // If in landscape orientation
     if((width>height) && (width>720)){
       return Row(children: [
-        Expanded( flex:1, child: ToDoList()),
-        Expanded( flex:2, child: DetailsPage()),
+        Expanded( flex:2, child: ToDoList()),
+        Expanded( flex:1, child: DetailsPage()),
       ]);
     }
     // Portrait orientation
@@ -103,17 +104,65 @@ class _MyHomePageState extends State<MyHomePage> {
       return Text("");
     }
     else{
-      return Column(children: [
-          Text("selected item is $selectedItem"),
-          ElevatedButton( child:Text("Back to List"), onPressed:() {
-          setState(() {
-            selectedItem = null;
-          });
-        }),
-      ]);
-    }
+      return Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+          child: Container(
+          padding: const EdgeInsets.all(10.0),
+          color: Colors.deepPurple[100],
+          child:
 
+              Column( mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+               Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                          child:
+                          Text("Task selected is:  ${selectedItem!.itemName}")),
+                      Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                          child: Text("Task ID is: ${selectedItem!.id}")),
+
+                    ]),
+              Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                  child:
+            ElevatedButton( child:Text("Delete Task"), onPressed:() {
+              showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Delete?'),
+                      content: const Text('Are you sure you want to delete this item?'),
+                      actions: <Widget>[
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              OutlinedButton(onPressed: () {
+                                setState(() {
+                                  todoDao.deleteToDo(selectedItem!);
+                                  words.removeAt(selectedRow);
+                                  selectedItem = null;
+                                  Navigator.pop(context);
+                                });
+
+                              },
+                                  child: Text("Yes")),
+                              OutlinedButton(onPressed: () {
+                                Navigator.pop(context);
+                              },
+                                  child: Text("No"))
+
+                            ]
+                        )
+
+                      ]));
+            }
+            )),
+          ])),
+
+
+
+
+            );}
   }
+
 
   Widget ToDoList() {
     return Column(
@@ -127,10 +176,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton( child:Text("Add item"), onPressed:() {
                 setState(() {
                   var text = _controller.value.text;
-                  var newItem = ToDoItem(ToDoItem.ID++, text);
-                  todoDao.insertToDo(newItem);
-                  words.add(newItem);
-                  _controller.text = "";
+                  if(text != ""){
+                    var newItem = ToDoItem(ToDoItem.ID++, text);
+                    todoDao.insertToDo(newItem);
+                    words.add(newItem);
+                    _controller.text = "";
+                  }
+
                 });
               }),
             ]),
@@ -166,9 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 onTap: () {
                                                   setState(() {
                                                     selectedItem = words[rowNum];
+                                                    selectedRow = rowNum;
                                                   });
                                                 },
-                                                onLongPress: () {
+                                                /* onLongPress: () {
                                                   showDialog<String>(
                                                       context: context,
                                                       builder: (BuildContext context) => AlertDialog(
@@ -196,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             )
 
                                                           ]));
-                                                }
+                                                } */
                                             ),
 
                                           ])));
@@ -215,7 +268,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-
           backgroundColor: Theme
               .of(context)
               .colorScheme
@@ -223,9 +275,16 @@ class _MyHomePageState extends State<MyHomePage> {
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
+          actions: [
+            ElevatedButton( child:Text("Back to List"), onPressed:() {
+              setState(() {
+                selectedItem = null;
+              });
+            }),
+          ],
         ),
         body: responsiveLayout());
-  }
+  }}
 
 
       /* Center(
@@ -316,4 +375,4 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
     ])));
   }
-}
+} */
