@@ -48,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _controller;
   late TextEditingController _controller2;
   List<ToDoItem> words =  [] ;
+  ToDoItem? selectedItem;
+
 
   @override
   void initState()  {
@@ -74,19 +76,159 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
+  Widget responsiveLayout(){
+    var size = MediaQuery.of(context).size;
+    var height = size.height;
+    var width = size.width;
+    // If in landscape orientation
+    if((width>height) && (width>720)){
+      return Row(children: [
+        Expanded( flex:1, child: ToDoList()),
+        Expanded( flex:2, child: DetailsPage()),
+      ]);
+    }
+    // Portrait orientation
+    else {
+      if (selectedItem == null) {
+        return ToDoList();
+      }
+      else {
+        return DetailsPage();
+      }
+    }
+  }
+
+  Widget DetailsPage() {
+    if(selectedItem == null){
+      return Text("");
+    }
+    else{
+      return Column(children: [
+          Text("selected item is $selectedItem"),
+          ElevatedButton( child:Text("Back to List"), onPressed:() {
+          setState(() {
+            selectedItem = null;
+          });
+        }),
+      ]);
+    }
+
+  }
+
+  Widget ToDoList() {
+    return Column(
+        children:[
+          Padding(padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children:[
+              Expanded(
+                  child:TextField(controller: _controller,
+                      decoration: InputDecoration(labelText: "Enter a to-do item..."))
+              ),
+              ElevatedButton( child:Text("Add item"), onPressed:() {
+                setState(() {
+                  var text = _controller.value.text;
+                  var newItem = ToDoItem(ToDoItem.ID++, text);
+                  todoDao.insertToDo(newItem);
+                  words.add(newItem);
+                  _controller.text = "";
+                });
+              }),
+            ]),
+          ),
+
+          Builder(
+              builder: (BuildContext context){
+                if(words.isEmpty){
+                  return  Padding(padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("To-Do List is currently empty.")
+                          ]));
+                }
+                else{
+                  return
+                    Expanded(child: Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                        child:
+                        ListView.builder(
+                            itemCount: words.length,
+                            itemBuilder: (context, rowNum) {
+                              return Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+                                  child: Container(
+                                      padding: const EdgeInsets.all(10.0),
+                                      color: Colors.deepPurple[100],
+                                      child:
+                                      Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text("Task Number: ${rowNum + 1} "),
+                                            GestureDetector(
+                                                child:  Text(words[rowNum].itemName),
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedItem = words[rowNum];
+                                                  });
+                                                },
+                                                onLongPress: () {
+                                                  showDialog<String>(
+                                                      context: context,
+                                                      builder: (BuildContext context) => AlertDialog(
+                                                          title: const Text('Delete?'),
+                                                          content: const Text('Are you sure you want to delete this item?'),
+                                                          actions: <Widget>[
+                                                            Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children: <Widget>[
+                                                                  OutlinedButton(onPressed: () {
+                                                                    setState(() {
+                                                                      todoDao.deleteToDo(words[rowNum]);
+                                                                      words.removeAt(rowNum);
+                                                                      Navigator.pop(context);
+                                                                    });
+
+                                                                  },
+                                                                      child: Text("Yes")),
+                                                                  OutlinedButton(onPressed: () {
+                                                                    Navigator.pop(context);
+                                                                  },
+                                                                      child: Text("No"))
+
+                                                                ]
+                                                            )
+
+                                                          ]));
+                                                }
+                                            ),
+
+                                          ])));
+                            }
+                        ))
+                    );
+                }
+              }),
+        ]);
+
+
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+        appBar: AppBar(
 
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+        ),
+        body: responsiveLayout());
+  }
+
+
+      /* Center(
         child:
         Column(
             children:[
