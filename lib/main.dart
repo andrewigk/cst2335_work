@@ -104,24 +104,35 @@ class _MyHomePageState extends State<MyHomePage> {
       return Text("");
     }
     else{
-      return Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
+      return Padding(padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
           child: Container(
           padding: const EdgeInsets.all(10.0),
           color: Colors.deepPurple[100],
           child:
-
               Column( mainAxisAlignment: MainAxisAlignment.start,
+
               children: [
-               Column(
+               Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(padding: EdgeInsets.fromLTRB(16, 64, 16, 0),
+                          child: Text("Task selected is:",
+                          style: TextStyle(fontSize: 16))
+                      )]),
+                Row( mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
                           child:
-                          Text("Task selected is:  ${selectedItem!.itemName}")),
+                          Text(selectedItem!.itemName,
+                              style: TextStyle(fontSize: 18)))
+                        ]),
+                Row( mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
-                          child: Text("Task ID is: ${selectedItem!.id}")),
+                          child: Text("Task ID is: ${selectedItem!.id}",
+                          style: TextStyle(fontSize: 12))),
+                          ]),
 
-                    ]),
               Padding(padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
                   child:
             ElevatedButton( child:Text("Delete Task"), onPressed:() {
